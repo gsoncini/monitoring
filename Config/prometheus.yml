@@ -1,0 +1,39 @@
+# Global Rules
+global:
+  scrape_interval:    10s
+  evaluation_interval: 20s
+rule_files:
+ - 'alert.rules'
+
+# Alertmanager
+#alerting:
+#  alertmanagers:
+#  - static_configs:
+#    - targets: ['localhost:9093']
+
+
+# VictoriaMetrics - Enable for send metrics to Victoria Metrics
+# remote_write:
+#  - url: "http://localhost:8428/api/v1/write"
+
+# Prometheus
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+         - targets: ['localhost:9090']
+
+# Wmi Exporter
+
+
+# Mysql Exporter
+  - job_name: 'mysql'
+    scrape_interval: 5s
+    static_configs:
+         - targets: ['localhost:9104']
+
+# Node Exporter
+  - job_name: 'node'
+    scrape_interval: 5s
+    static_configs:
+         - targets: ['localhost:9100']
