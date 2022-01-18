@@ -1,0 +1,29 @@
+# EMAIL
+
+route:
+  group_by: [Alertname]
+  # Send all notifications to me.
+  receiver: email-me
+ 
+receivers:
+- name: email-me
+  email_configs:
+  - to: email@domain.com.br
+    from: AlertManager <email@domain.com.br>
+    smarthost: smtp.gmail.com:587
+    auth_username: "email@domain.com.br"
+    auth_identity: "email@domain.com.br"
+    auth_password: "P4SSW0RD"
+
+# SLACK
+
+route:
+    receiver: 'slack'
+ 
+receivers:
+    - name: 'slack'
+      slack_configs:
+          - send_resolved: true
+            username: 'YOUR USERNAME'
+            channel: 'YOUR CHANNEL'
+            api_url: 'INCOMMING WEBHOOK'
