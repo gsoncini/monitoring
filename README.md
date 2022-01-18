@@ -10,6 +10,9 @@
 - Grafana
 - Node_Exporter
 - Consul_Exporter
+- Mysql_Exporter
+- Apache_Exporter
+- Wmi_Exporter
 - Netdata
 
 
