@@ -1,0 +1,87 @@
+# Passo 1 - Criaremos um usuário no Proxmox dedicado porque a coleta de dados anônimos não é permitida. Este usuário terá permissões somente leitura.
+# Faça login no seu host proxmox e verifique se você está trabalhando como root, execute os seguintes comandos:
+$ pveum aclmod / -user pve-exporter@pve -role PVEAuditor
+$ pveum user add pve-exporter@pve -comment "PVE-Exporter" -password <prometheus@passw0rd!>
+
+# Passo 2 - Criar usuário no Linux (Prometheus Server)
+# Para executar o exportador como daemon / systemd, criamos um usuário dedicado.
+$ useradd -c "pve exporter" -m -s /bin/false pve-exporter
+
+# Passo 3 - Instale o pacote e as dependências do python
+# O exportador pve é escrito em Python e vamos instalá-lo dentro de um chamado venv (ambiente virtual).
+$ apt-get update && apt-get install python3-venv python3-setuptools python3-dev python3-pip libffi-dev libssl-dev build-essential -y
+
+# Passo 4 - Crie e ative o venv, instale o prometheus-pve-exporter
+$ python3 -m venv /opt/prometheus-pve-exporter
+$ source /opt/prometheus-pve-exporter/bin/activate
+
+# Verifique se (prometheus-pve-exporter)está presente na frente do prompt da linha de comando antes de executar o próximo comando.
+
+(prometheus-pve-exporter) $ pip install prometheus-pve-exporter
+
+# No Debian 10, uma mensagem de erro ( Failed to build proxmoxer) pode ser exibida. 
+# Isso não é um problema, basta verificar se tudo foi instalado executando o comando novamente. Deve terminar em muito pouco tempo e todas as linhas devem começar com "Requisito já satisfeito".
+# Finalmente saia do venv executandodeactivate
+
+# Passo 5 - Configurar prometheus-pve-exporter
+# Coloque as credenciais criadas anteriormente para o usuário Proxmox pve-exporter em um arquivo .yml.
+
+$ mkdir -p /etc/prometheus
+$ cat <<EOF > /etc/prometheus/pve.yml
+default:
+    user: pve-exporter@pve
+    password: <secure passphrase or password>
+    # only needed when you not configured Lets Encrypt 
+    # verify_ssl: false
+EOF
+$ chown root.pve-exporter /etc/prometheus/pve.yml
+$ chmod 640 /etc/prometheus/pve.yml
+
+# Passo 6 - Configurar a unidade systemd para prometheus-pve-exporter
+
+$ cat <<EOF> /etc/systemd/system/prometheus-pve-exporter.service
+[Unit]
+Description=Prometheus exporter for Proxmox VE
+Documentation=https://github.com/znerol/prometheus-pve-exporter
+
+[Service]
+Restart=always
+User=pve-exporter
+ExecStart=/opt/prometheus-pve-exporter/bin/pve_exporter /etc/prometheus/pve.yml
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+# Recarregue o SystemD, inicie e habilite o serviço.
+
+$ systemctl daemon-reload 
+$ systemctl start prometheus-pve-exporter.service
+$ systemctl enable prometheus-pve-exporter.service
+
+# Verifique se a porta 9221 está aberta
+$ ss -lntp | grep 9221
+LISTEN 0      128          0.0.0.0:9221      0.0.0.0:*    users:(("pve_exporter",pid=7539,fd=3))
+
+# Passo 7 - Testar a funcionalidade
+$ curl -s localhost:9221/pve
+
+
+# Passo 8 - Estendendo a configuração para o servidor Prometheus
+
+your-prometheus-host $ vim /etc/prometheus/prometheus.yml
+
+  - job_name: 'pve-exporter'
+    static_configs:
+      - targets:
+        - your-proxmox-host:9221
+    metrics_path: /pve
+    params:
+      module: [default]
+
+your-prometheus-host $ systemctl restart prometheus
+
+
+# https://github.com/prometheus-pve/prometheus-pve-exporter
+
