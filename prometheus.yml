@@ -55,6 +55,12 @@ scrape_configs:
 #          - targets: ['host-win2:9182']
 #          - targets: ['host-win3:9182']
 
+# Mysql Exporter
+#  - job_name: 'mysql'
+#    scrape_interval: 5s
+#    static_configs:
+#         - targets: ['localhost:9104'] 
+
 # BlackBox Exporter - Monitor for Sites HTTP/HTTPS
 #  - job_name: 'blackbox'
 #    metrics_path: /probe
@@ -71,9 +77,3 @@ scrape_configs:
 #        target_label: instance
 #      - target_label: __address__
 #        replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.
-
-# Mysql Exporter
-#  - job_name: 'mysql'
-#    scrape_interval: 5s
-#    static_configs:
-#         - targets: ['localhost:9104'] 
