@@ -1,0 +1,79 @@
+# Global Configuration
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+
+# Alertmanager Configuration
+# alerting:
+#  alertmanagers:
+#    - static_configs:
+#        - targets:
+#          # - alertmanager:9093
+
+# Alert Rules
+rule_files:
+#   - "first_rules.yml"
+#   - "second_rules.yml"
+
+# VictoriaMetrics - Remote Storage
+# remote_write:
+#  - url: "http://remotehostvictoriametrics:8428/api/v1/write"
+
+# Prometheus Server
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+# Ceph Exporter - MGR Module Native Ceph
+#  - job_name: 'ceph'
+#    scrape_interval: 30s
+#    static_configs:
+#          - targets: ['ipnodemgr1:9283', 'ipnodemgr2:9283', 'ipnodemgr3:9283']
+#            labels:
+#                   cluster: cluster-ceph
+
+# PushGateway - Server PushGateway
+#  - job_name: 'pushgateway'
+#    honor_labels: true
+#    static_configs:
+#          - targets: ['pushgateway:9091']
+
+# Node Exporter for Linux
+  - job_name: 'node'
+    scrape_interval: 15s
+    static_configs:
+          - targets: ['host1:9100']
+          - targets: ['host2:9100']
+          - targets: ['host3:9100']
+
+# Windows Exporter for Windows
+#  - job_name: 'windows'
+#    scrape_interval: 15s
+#    static_configs:
+#          - targets: ['host-win1:9182']
+#          - targets: ['host-win2:9182']
+#          - targets: ['host-win3:9182']
+
+# BlackBox Exporter - Monitor for Sites HTTP/HTTPS
+#  - job_name: 'blackbox'
+#    metrics_path: /probe
+#    params:
+#      module: [http_2xx]  # Look for a HTTP 200 response.
+#    static_configs:
+#      - targets:
+#        - https://prometheus.io
+#
+#    relabel_configs:
+#      - source_labels: [__address__]
+#        target_label: __param_target
+#      - source_labels: [__param_target]
+#        target_label: instance
+#      - target_label: __address__
+#        replacement: 127.0.0.1:9115  # The blackbox exporter's real hostname:port.
+
+# Mysql Exporter
+#  - job_name: 'mysql'
+#    scrape_interval: 5s
+#    static_configs:
+#         - targets: ['localhost:9104'] 
