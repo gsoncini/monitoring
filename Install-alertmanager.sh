@@ -15,16 +15,16 @@ mkdir -p /var/lib/alertmanager/data
 touch /etc/alertmanager/alertmanager.yml
 
 # Set ownership
-chown -R prometheus:prometheus /etc/alertmanager
-chown -R prometheus:prometheus /var/lib/alertmanager
+chown -R alertmanager:alertmanager /etc/alertmanager
+chown -R alertmanager:alertmanager /var/lib/alertmanager
 
 # Copy binaries
 cp alertmanager /usr/local/bin/
 cp amtool /usr/local/bin/
 
 # Set ownership
-chown prometheus:prometheus /usr/local/bin/alertmanager
-chown prometheus:prometheus /usr/local/bin/amtool
+chown alertmanager:alertmanager /usr/local/bin/alertmanager
+chown alertmanager:alertmanager /usr/local/bin/amtool
 
 # Setup systemd
 echo '[Unit]
@@ -33,8 +33,8 @@ Wants=network-online.target
 After=network-online.target
  
 [Service]
-User=prometheus
-Group=prometheus
+User=alertmanager
+Group=alertmanager
 Type=simple
 ExecStart=/usr/local/bin/alertmanager --config.file=/etc/alertmanager/alertmanager.yml --storage.path /var/lib/alertmanager/data
  
