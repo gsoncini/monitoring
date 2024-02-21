@@ -1,41 +1,38 @@
+# Install Prometheus Service
 #!/bin/bash
-PROMETHEUS_VERSION="2.46.0"
+PROMETHEUS_VERSION="2.33.0"
 wget https://github.com/prometheus/prometheus/releases/download/v${PROMETHEUS_VERSION}/prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz
 tar -xzvf prometheus-${PROMETHEUS_VERSION}.linux-amd64.tar.gz
 cd prometheus-${PROMETHEUS_VERSION}.linux-amd64/
 # if you just want to start prometheus as root
 #./prometheus --config.file=prometheus.yml
-
+ 
 # Create user
-useradd --no-create-home --shell /bin/false prometheus
-
+useradd --no-create-home --shell /bin/false prometheus 
+ 
 # Create Directories
 mkdir -p /etc/prometheus
 mkdir -p /var/lib/prometheus
-
+ 
 # Set ownership
 chown prometheus:prometheus /etc/prometheus
 chown prometheus:prometheus /var/lib/prometheus
-
+ 
 # Copy binaries
 cp prometheus /usr/local/bin/
 cp promtool /usr/local/bin/
-
+ 
 chown prometheus:prometheus /usr/local/bin/prometheus
 chown prometheus:prometheus /usr/local/bin/promtool
-
+ 
 # Copy config
 cp -r consoles /etc/prometheus
 cp -r console_libraries /etc/prometheus
-# cp prometheus.yml /etc/prometheus/prometheus.yml
-
-# Copy Soncini config
-cd /etc/prometheus/
-wget https://raw.githubusercontent.com/gsoncini/monitoring/main/Config/prometheus.yml
-
+cp prometheus.yml /etc/prometheus/prometheus.yml
+ 
 chown -R prometheus:prometheus /etc/prometheus/consoles
 chown -R prometheus:prometheus /etc/prometheus/console_libraries
-
+ 
 # Setup systemd
 echo '[Unit]
 Description=Prometheus
@@ -54,7 +51,7 @@ ExecStart=/usr/local/bin/prometheus \
  
 [Install]
 WantedBy=multi-user.target' > /etc/systemd/system/prometheus.service
-
+ 
 systemctl daemon-reload
 systemctl enable prometheus
 systemctl start prometheus
