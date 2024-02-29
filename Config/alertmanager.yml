@@ -1,3 +1,36 @@
+# TELEGRAM
+global:
+  resolve_timeout: 5m
+
+receivers:
+- name: default-telegram
+  telegram_configs:
+  - api_url: https://api.telegram.org
+    bot_token: BOTTOKEN
+    chat_id: CHATID
+    disable_notifications: false
+    http_config:
+      follow_redirects: true
+    send_resolved: true
+    parse_mode: ""
+    message: "\U0000203C Status: {{.Status | toUpper }}  \U0000203C \n{{range .Alerts}}\n
+\U00002728 Instance:\n
+{{ .Labels.nodename}}\n
+\U00002755 AlertName:\n
+{{ .Labels.alertname}}\n
+\U00002712 Description:\n
+{{ .Annotations.description }}\n{{ end }}"
+
+route:
+  continue: false
+  group_by:
+  - job
+  group_interval: 30m
+  group_wait: 30s
+  receiver: default-telegram
+  repeat_interval: 1m
+
+
 # EMAIL
 
 #route:
