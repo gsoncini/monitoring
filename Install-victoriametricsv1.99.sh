@@ -1,13 +1,13 @@
 #!/bin/bash
 groupadd -r victoriametrics
 useradd -g victoriametrics -d /var/lib/victoriametrics -s /sbin/nologin --system victoriametrics
-apt install jq curl -y
+apt install jq -y
 
-curl -L https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v1.64.1/victoria-metrics-amd64-v1.64.1.tar.gz --output victoria-metrics-amd64-v1.64.1.tar.gz
+wget https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v1.99.0/victoria-metrics-linux-amd64-v1.99.0.tar.gz
 
 export VM_VER=`curl -s https://api.github.com/repos/VictoriaMetrics/VictoriaMetrics/releases/latest | jq -r '.tag_name'` && curl -L https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/${VM_VER}/victoria-metrics-amd64-${VM_VER}.tar.gz --output victoria-metrics-amd64-${VM_VER}.tar.gz
 
-tar xvf victoria-metrics-amd64-*.tar.gz -C /usr/local/bin/
+tar -xvzf victoria-metrics-amd64-*.tar.gz /usr/local/bin/
 
 chown -v root:root /usr/local/bin/victoria-metrics-prod
 
