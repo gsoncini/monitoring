@@ -1,4 +1,5 @@
 #!/bin/bash
+# https://github.com/VictoriaMetrics/VictoriaMetrics/releases/tag/v1.99.0
 groupadd -r victoriametrics
 useradd -g victoriametrics -d /var/lib/victoriametrics -s /sbin/nologin --system victoriametrics
 apt install jq -y
